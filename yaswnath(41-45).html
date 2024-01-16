@@ -1,0 +1,233 @@
+<html>
+    <head>
+        <!-- <link rel="stylesheet" href="newfile.css"> -->
+    </head>
+    <body><div class="box">
+        <p>
+<div class="center"><center>Chapter II</center></div><br><br>
+<div class="center"><center>Control of Inductive Bias</center></div><br>
+<div class="center"><center>in Supervised Learning</center></div><br>
+<div class="center"><center>Using Evolutionary</center></div><br>
+<div class="center"><center>Computation:</center></div><br>
+<div class="center"><center>A Wrapper-Based</center></div><br>
+<div class="center"><center>Approach</center></div><br>
+<center>
+William H. Hsu<br>
+Kansas State University, USA
+</center><br>
+<div class="center1"><center>ABSTRACT</center></div><br>
+<i>In this chapter, I discuss the problem of feature subset selection for supervised inductive
+learning approaches to knowledge discovery in databases (KDD), and examine this
+and related problems in the context of controlling inductive bias. I survey several
+combinatorial search and optimization approaches to this problem, focusing on data-
+driven, validation-based techniques. In particular, I present a wrapper approach that
+uses genetic algorithms for the search component, using a validation criterion based
+upon model accuracy and problem complexity, as the fitness measure. Next, I focus on
+design and configuration of high-level optimization systems (wrappers) for relevance
+determination and constructive induction, and on integrating these wrappers with
+elicited knowledge on attribute relevance and synthesis. I then discuss the relationship
+between this model selection criterion and those from the minimum description length
+(MDL) family of learning criteria. I then present results on several synthetic problems</i><br><br>
+
+
+<i>on task-decomposable machine learning and on two large-scale commercial data-mining and decision-support projects: crop condition monitoring, and loss prediction
+for insurance pricing. Finally, I report experiments using the </i> Learning in Java
+(MLJ) <i>and</i> Data to Knowledge (D2K) <i></i> visual programming systems for data
+mining and information visualization, and several commercial and research tools. Test
+set accuracy using a genetic wrapper is significantly higher than that of decision tree
+inducers alone and is comparable to that of the best extant search-space based
+wrappers.</i><br><br>
+<div class="center1"><center>INTRODUCTION</center></div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This chapter introduces the problems for change of representation (Benjamin, 1990)
+in supervised inductive learning. I address the focal problem of inductive learning in data
+mining and present a multi-strategy framework for automatically improving the representation of learning problems. This framework incorporates methodological aspects of
+<i>feature subset selection and feature (attribute) partitioning, automated problem
+decomposition, and model selection.</i> The focus is on<i> wrapper-based </i>methods as
+studied in recent and continuing research.<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;As an example, I present a new metric-based model selection approach (composite
+learning) for decomposable learning tasks. The type of data for which this approach is
+best suited is heterogeneous, time series data &#45; that arising from multiple sources of data
+(as in sensor fusion or multimodal human-computer interaction tasks, for example). The
+rationale for applying multi-strategy learning to such data is that, by systematic analysis
+and transformation of learning tasks, both the efficiency and accuracy of classifier
+learning may be improved for certain time series problems. Such problems are referred
+to in this chapter as <i>decomposable;</i> the methods addressed are: task decomposition and
+subproblem definition, quantitative model selection, and construction of hierarchical
+mixture models for data fusion. This chapter presents an integrated, multi-strategy
+system for decomposition of time series classifier learning tasks.<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A typical application for such a system is learning to predict and classify hazardous
+and potentially catastrophic conditions. This prediction task is also known as <i>crisis
+monitoring,</i> a form of pattern recognition that is useful in decision support or <i>recommender</i>
+systems (Resnick & Varian, 1997) for many time-critical applications. Examples of crisis
+monitoring problems in the industrial, military, agricultural, and environmental sciences
+are numerous. They include: crisis control automation (Hsu<i> et al.,</i> 1998), online medical
+diagnosis (Hayes-Roth <i>et al., </i>1996), simulation-based training and critiquing for crisis
+management (Gaba <i>et al.,</i> 1992; Grois, Hsu, Voloshin, & Wilkins <i>et al., </i>1998), and
+intelligent data visualization for <i>real-time decision-making </i>(Horvitz & Barry, 1995).<br><br>
+<div class="center1">Motivation: Control of Inductive Bias</div>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The broad objectives of the approach I present here are to increase the robustness
+of inductive machine learning algorithms and develop learning systems that can be
+automatically tuned to meet the requirements of a knowledge discovery (KD) performance element. When developers of learning systems can map a KD application to a set<br><br>
+
+
+of automatic higher-order parameter-turning problems, the reuse of design and code
+embodied by this generalization over traditional learning can reduce development costs.
+When addressing KD problems in computational science and engineering, the time
+required to develop an effective representation and to tune these hyperparameters using
+training and validation data sets can be a significant fraction of the development time of
+the KD system, exceeding the time required to apply traditional learning algorithms with
+fixed hyperparameters and bias parameters. This setting introduces new flexibility and
+complexity into the learning problem and may extend the expected useful lifetime of the
+system. For example, if the learning component is made more adaptable through
+automated performance tuning, then the overall system, not merely the learning algorithms it uses, may last longer than one tailored to a specific data set or problem domain.
+Thus it becomes subject to traditional maintenance and evolution. On the other hand,
+performance tuning may reduce the development time of highly specialized KD systems
+as well, by identifying and constructing relevant variables. In this case, reducing the cost
+of developing the more limited-use software can, in turn, significantly reduce that of
+solving the intended scientific or engineering problem. In many real-world KD applica-tions, it is preferable to automatically tune some but not all of the available bias
+parameters to prevent overfitting of training data. This is because the computational time
+savings for the performance element (e.g., prediction, classification, or pattern detection
+function) and marginal gains in solution quality (e.g., utility or accuracy) do not make it
+worthwhile to fine-tune some bias parameters that are less significant for the learning
+problem. A significant component of development costs is related to reducing wasted
+development time and computation time by making the entire programming systems
+product (Brooks, 1995) responsive and adaptable to end-user needs. Combinatorial
+search and statistical validation over representations, visualization of the models and
+their relation to quantitative inductive bias (Benjamin, 1990; Mitchell, 1997), and highlevel user interfaces for KD can be applied to achieve these goals.<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A major motivation for the automation of problem transformation is <i>transparency.</i>
+The end user of a KD system is often a specialist in scientific, engineering, or businessrelated technical fields other than intelligent systems and machine learning. He or she
+knows the requirements of the application in terms of the performance element, an
+analytical function that can: predict the continuation of a historical time series; detect
+anomalous conditions in a time annotated episodic log; classify, diagnose, or explain set
+of database records; make a recommendation for a business or medical decision; or
+generate a plan, schedule, or design. These predictors, anomaly detectors, classifiers,
+diagnostic and recommender systems, policies, and other problem solvers have their own
+performance measures, perhaps including real-time requirements, which in turn dictate
+those of the learning system. This suggests that more robust KD may be achieved by
+letting the end user specify requirements pertaining to the performance element and
+automatically generating specifications for the desired representation and higher-order
+parameters to be tuned. In this way, the improvement of problem representation by
+automated transformation can be driven by users&#146; specified time and resource constraints.<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The research covered in this chapter focuses on demonstrating, through development of a learning enhancement framework and through empirical evaluation, that these
+broad objectives can be achieved for a wide variety of real-world KD applications. This
+research thrust has two main objectives: assessing the breadth of applicability of<br><br>
+
+
+
+automatic transformation of learning problems by training the resultant models and
+applying them to large-scale KD problems over real-world data sets, and developing
+information visualization techniques to help users understand this process of improving
+problem representations.<br><br>
+<div class="center1">Attribute-Driven Problem Decomposition: Subset<br>
+Selection and Partition Search</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Many techniques have been studied for decomposing learning tasks, to obtain
+more tractable subproblems, and to apply multiple models for reduced variance. This
+section examines <i>attribute-based </i>approaches for problem reformulation, especially
+<i>partitioning</i> of input attributes in order to define <i>intermediate concepts</i> (Fu & Buchanan,
+1985) in problem decomposition. This mechanism produces multiple subproblems for
+which appropriate models must be selected; the trained models can then be combined
+using <i>classifier fusion</i> models adapted from bagging (Breiman, 1996), boosting (Freund
+& Schapire, 1996), stacking (Wolpert, 1992), and hierarchical mixture models (Jordan &
+Jacobs, 1994).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;One of the approaches we shall examine in this chapter uses partitioning to
+<i>decompose</i> a learning task into parts that are individually useful (using <i>aggregation </i>as
+described in the background section of this chapter), rather than to <i>reduce</i> attributes to
+a single useful group. This permits new intermediate concepts to be formed by
+unsupervised learning methods such as conceptual clustering (Michalski & Stepp, 1983)
+or cluster formation using self-organizing algorithms (Kohonen, 1990; Hsu<i> et al.,</i> 2002).
+The newly defined problem or problems can then be mapped to one or more appropriate
+hypothesis languages (model specifications). In our new system, the subproblem
+definitions obtained by partitioning of attributes also specify a mixture estimation
+problem (i.e., data fusion step occurs after training of the models for all the subproblems).<br><br>
+<div class="center1">Subproblem Definition</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The purpose of attribute partitioning is to define intermediate concepts and
+subtasks of decomposable time series learning tasks, which can be mapped to the
+appropriate submodels. In both attribute subset selection and partitioning, attributes
+are grouped into subsets that are relevant to a particular task: the overall learning task
+or a subtask. Each subtask for a partitioned attribute set has its own inputs (the attribute
+subset) and its own <i>intermediate concept.</i> This intermediate concept can be discovered
+using unsupervised learning methods, such as self-organizing feature maps (Kohonen,
+1990; Hsu <i>et al., </i>2002) and <i>k-means clustering</i> (Duda <i>et al.,</i> 2000). Other methods, such
+as <i>competitive clustering</i> or <i>vector quantization</i> using radial basis functions (Haykin,
+1999), <i>neural trees</i> (Li <i>et al.,</i> 1993) and similar models (Ray & Hsu, 1998; Duda <i>et al.,</i> 2000),
+<i>principal components analysis </i>(Watanabe, 1985; Haykin, 1999), <i>Karhunen-Loève
+transforms </i>(Watanabe, 1985), or <i>factor analysis </i>(Watanabe, 1985), can also be used.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Attribute partitioning is used to control the formation of intermediate concepts in
+this system. Whereas attribute subset selection yields a<i> single,</i> reformulated learning
+problem (whose intermediate concept is neither necessarily nor intentionally different<br><br>
+
+
+from the original concept), attribute partitioning yields <i>multiple learning subproblems</i>
+(whose intermediate concepts may or may not differ, but are simpler by design when they
+do). The goal of this approach is to find a natural and principled way to specify how
+intermediate concepts should be simpler than the overall concept.<br><br>
+<div class="center1">Metric-Based Model Selection and Composite<br>
+Learning</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>Model selection</i> is the problem of choosing a hypothesis class that has the
+appropriate complexity for the given training data (Stone, 1977; Schuurmans, 1997).
+Quantitative methods for model selection have previously been used to learn using
+highly flexible <i>nonparametric</i> models with many degrees of freedom, but with no
+particular assumptions on the structure of decision surfaces.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The ability to decompose a learning task into simpler subproblems prefigures a need
+to map these subproblems to the appropriate models. The general mapping problem,
+broadly termed <i>model selection, </i>can be addressed at very minute to very coarse levels.
+This chapter examines quantitative, metric-based approaches for model selection at a
+coarse level. This approach is a direct extension of the <i>problem definition and technique
+selection </i>process (Engels <i>et al., </i>1998). We will henceforth use the term <i>model selection</i>
+to refer to both traditional model selection and the metric-based methods for technique
+selection as presented here. We begin with background on the general framework of
+inductive bias control and then survey time series learning architectures, their <i>representation biases</i> (Witten & Frank, 2000), and methods for selecting them from a collection
+of model components.<br><br>
+<div class="center1"><center>BACKGROUND</center></div>
+<div class="center1">Key Problem: Automated Control of Inductive Bias</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;We first focus on development of a new learning system for spatiotemporal KD. The
+KD performance element in this problem is not just analytical but includes decision
+support through model visualization and anomaly detection.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The problems we face are threefold and are surveyed in the above sections on
+current and related work. First, we must address <i>relevance determination</i> to determine
+what sensor data channels are useful for a particular KD objective and data set. This
+problem is related to the so-called <i>curse of dimensionality</i> wherein an overabundance
+of input variables makes it difficult to learn the prediction, classification, or pattern
+recognition element. Second, the task of identifying hyperparameters of the KD system
+is subject to deceptivity and instability because bias optimization in general introduces
+a new level of combinatorial complexity to the problem of inductive learning. Third, the
+very large spatiotemporal databases we are dealing with are highly heterogeneous,
+arising from many disparate sources such as global positioning systems (GPS), survey-ing, sensors such as radar, and historical databases; this heterogeneity presents the
+advantage of type information that can help constrain dimensionality but also aggra-<br>
+        </p>
+
+
+    </div>
+</body>
+</html>
+<style>
+body{ margin-left:  275px;
+    margin-right: 275px;
+    }
+    h{
+        float: right;
+    }
+    bold{
+        align-items: center;
+    }
+    .center{ font-weight: bold;
+    font-size :50px;;
+    font-style: normal;}
+    h51{
+        font-weight: none;
+        font-size: 13px;
+    }
+    .center1{ font-weight: bold;
+        font-size :25px;;
+        font-style: normal;}
+    
+    .box{
+        
+            width: 80%;
+            
+            border: 1px ;
+            padding: 10px;
+            margin: 10px;
+    }    
+</style>
